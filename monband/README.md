@@ -1,6 +1,6 @@
 # Monband
 
-Monband is a small bandwidth monitoring utility written in ANSI C.
+Monband is a small bandwidth monitoring utility written in C.
 
 ## Prerequisites
 

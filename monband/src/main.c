@@ -10,7 +10,8 @@
 #include <string.h>
 
 #define PACKET_COUNT 10
-#define KILOBYTE 1024
+#define KILOBYTE (double)1024
+#define MEGABYTE (double)(1024 * 1024)
 
 int main(void)
 {
@@ -65,14 +66,27 @@ int main(void)
 			fprintf(stderr, "ERROR: Could not set start time");
 			exit(EXIT_FAILURE);
 		}
+
 		while (difftime(time(NULL), before) != 1) {
 			if ((packet = pcap_next(capturedev, &packet_header)) !=
 			    NULL) {
 				download_speed += packet_header.len;
 			}
 		}
-		printf("\rDownload Speed: %fKB/s", download_speed / KILOBYTE);
-		fflush(stdout);
+
+		if (download_speed / KILOBYTE > 1024) {
+			printf("\rDownload Speed: %f MB/s",
+			       download_speed / MEGABYTE);
+			fflush(stdout);
+		} else if (download_speed < 1024) {
+			printf("\rDownload Speed: %f B/s",
+			       download_speed);
+			fflush(stdout);
+		} else {
+			printf("\rDownload Speed: %f KB/s",
+			       download_speed / KILOBYTE);
+			fflush(stdout);
+		}
 	}
 
 	/* close the activated device */
