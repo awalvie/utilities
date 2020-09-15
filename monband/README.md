@@ -1,6 +1,6 @@
 # Monband
 
-Monband is a small bandwidth monitoring utility written in C.
+Monband is a small bandwidth monitoring utility written in ANSI C.
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@ Monband is a small bandwidth monitoring utility written in C.
 Follow the steps below:
 ```
 git clone https://github.com/awalvie/utilities
-cd monband/src
+cd utilities/monband/src
 make
 ./main
 ```
