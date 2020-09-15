@@ -2,21 +2,25 @@
 /* start the program */
 /* refresh every 0.5s and show current download and upload rate*/
 
-#define PACKET_COUNT 10
-
+#include <time.h>
 #include <errno.h>
 #include <stdio.h>
 #include <pcap/pcap.h>
 #include <stdlib.h>
 #include <string.h>
 
+#define PACKET_COUNT 10
+#define KILOBYTE 1024
+
 int main(void)
 {
-	int errno, i;
-	const u_char *packet;
+	int errno;
+	double download_speed;
 	char *dev;
 	char errbuf[PCAP_ERRBUF_SIZE];
 
+	time_t before;
+	const u_char *packet;
 	static struct pcap_pkthdr packet_header;
 
 	pcap_if_t *alldevsp;
@@ -55,12 +59,20 @@ int main(void)
 	}
 
 	while (1) {
-		if ((packet = pcap_next(capturedev, &packet_header)) != NULL) {
-			printf("Packet length: %d\n", packet_header.len);
-			printf("Packet timestamp: %ld\n",
-			       packet_header.ts.tv_sec);
-			printf("Packet caplen: %d\n", packet_header.caplen);
+		download_speed = 0;
+		before = time(NULL);
+		if (before == (time_t)(-1)) {
+			fprintf(stderr, "ERROR: Could not set start time");
+			exit(EXIT_FAILURE);
 		}
+		while (difftime(time(NULL), before) != 1) {
+			if ((packet = pcap_next(capturedev, &packet_header)) !=
+			    NULL) {
+				download_speed += packet_header.len;
+			}
+		}
+		printf("\rDownload Speed: %fKB/s", download_speed / KILOBYTE);
+		fflush(stdout);
 	}
 
 	/* close the activated device */
